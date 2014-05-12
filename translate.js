@@ -9,26 +9,21 @@ function TranslateController($scope) {
     $scope.source_pieces = JSON.parse(localStorage['source_pieces'] || "[]");
     $scope.result_pieces = JSON.parse(localStorage['result_pieces'] || "[]");
 
-    $scope.$watch('source_text', function(newValue) {
-        if (newValue) {
-            $scope.source_pieces = _.filter(newValue.split('\n'), function (p) {
+    $scope.updateSource = function() {
+        if ($scope.source_text) {
+            $scope.source_pieces = _.filter($scope.source_text.split('\n'), function (p) {
                 return p;
             });
             $scope.result_pieces = _.map($scope.source_pieces, function () {
                 return '';
             })
 
-            localStorage['source_text'] = JSON.stringify(newValue);
+            localStorage['source_url'] = JSON.stringify($scope.source_url);
+            localStorage['source_text'] = JSON.stringify($scope.source_text);
             localStorage['source_pieces'] = JSON.stringify($scope.source_pieces);
             localStorage['result_pieces'] = JSON.stringify($scope.result_pieces);
         }
-    });
-
-    $scope.$watch('source_url', function(newValue) {
-        if (newValue) {
-            localStorage['source_url'] = JSON.stringify(newValue);
-        }
-    });
+    };
 
     $scope.$watchCollection('result_pieces', function(newValue) {
         localStorage['result_pieces'] = JSON.stringify($scope.result_pieces);

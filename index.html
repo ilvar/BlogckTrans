@@ -2,7 +2,7 @@
 <html ng-app>
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
+    <title>BlogckTrans - article translation UI</title>
     <link rel="stylesheet" href="./bootstrap.min.css">
     <link rel="stylesheet" href="./bootstrap.cerulean.min.css">
     <style>
@@ -23,8 +23,9 @@
             <div class="navbar-header">
                 <a class="navbar-brand" href="#">BlogTrans</a>
             </div>
+            <button class="btn btn-sm btn-primary navbar-btn" data-toggle="modal" data-target="#infoModal">Info</button>
             <div class="navbar-right">
-                <button class="btn btn-sm btn-primary navbar-btn" data-toggle="modal" data-target="#sourceModal">Source</button>
+                <button class="btn btn-sm btn-warning navbar-btn" data-toggle="modal" data-target="#sourceModal">Source</button>
                 <button class="btn btn-sm btn-success navbar-btn" data-toggle="modal" data-target="#resultModal">Result</button>
             </div>
         </div>
@@ -43,6 +44,36 @@
     </table>
 
     <!-- Modal -->
+    <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Info</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        It's a simple tool to translate large articles paragraph-by-paragraph.
+                    </p>
+                    <p>
+                        No registration, no collaboration, no permanent connection needed. Really, you can save this
+                        page to your old laptop and translate texts even on Everest!
+                    </p>
+                    <p>
+                        Just click "Source" and paste source text with paragraphs splitted by double linebreaks.
+                        Translate text pieces one-by-one and click "Result" to get translation in Markdown or HTML.
+                    </p>
+                    <p>
+                        Built by <a href="http://ilvar.ru">ilvar.ru</a>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="sourceModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -53,7 +84,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="idSourceURL">Source URL</label>
-                        <input class="form-control" id="idSourceURL" ng-model="source_url"></input>
+                        <input class="form-control" id="idSourceURL" ng-model="source_url" />
                     </div>
                     <div class="form-group">
                         <label for="idSourceText">Source text</label>
@@ -61,6 +92,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="updateSource()">Update</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
