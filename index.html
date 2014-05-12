@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app>
+<html ng-app="bltApp">
 <head lang="en">
     <meta charset="UTF-8">
     <title>BlogckTrans - article translation UI</title>
@@ -14,6 +14,10 @@
         }
         .navbar {
             margin-bottom: 5px;
+        }
+        #idResultPreview {
+            overflow-y: auto;
+            max-height: 600px;
         }
     </style>
 </head>
@@ -95,18 +99,30 @@
                     <h4 class="modal-title" id="myModalLabel">Result</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label for="idResultMarkdown">Result markdown</label>
-                                <textarea class="form-control" id="idResultMarkdown" ng-model="result_markdown"></textarea>
-                            </div>
+                    <ul class="nav nav-tabs">
+                        <li ng-class="{'active': result_format == 'preview'}">
+                            <a href="#" ng-click="result_format = 'preview'">preview</a>
+                        </li>
+                        <li ng-class="{'active': result_format == 'markdown'}">
+                            <a href="#" ng-click="result_format = 'markdown'">markdown</a>
+                        </li>
+                        <li ng-class="{'active': result_format == 'html'}">
+                            <a href="#" ng-click="result_format = 'html'">html</a>
+                        </li>
+                    </ul>
+                    <div ng-show="result_format == 'preview'">
+                        <div id="idResultPreview" ng-bind-html="result_html"></div>
+                    </div>
+                    <div ng-show="result_format == 'markdown'">
+                        <div class="form-group">
+                            <label for="idResultMarkdown">Result markdown</label>
+                            <textarea class="form-control" id="idResultMarkdown" ng-model="result_markdown"></textarea>
                         </div>
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label for="idResultHTML">Result html</label>
-                                <textarea class="form-control" id="idResultHTML" ng-model="result_html"></textarea>
-                            </div>
+                    </div>
+                    <div ng-show="result_format == 'html'">
+                        <div class="form-group">
+                            <label for="idResultHTML">Result html</label>
+                            <textarea class="form-control" id="idResultHTML" ng-model="result_html"></textarea>
                         </div>
                     </div>
                 </div>
@@ -120,6 +136,7 @@
     <script src="./jquery.min.js"></script>
     <script src="./bootstrap.min.js"></script>
     <script src="./angular.min.js"></script>
+    <script src="./angular-sanitize.min.js"></script>
     <script src="./lodash.min.js"></script>
     <script src="./js-markdown-extra.js"></script>
     <script src="./translate.js"></script>
