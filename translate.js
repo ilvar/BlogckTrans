@@ -62,7 +62,7 @@ bltApp.controller('TranslateController', ['$scope', '$http', function TranslateC
         url += '&text=' + src + '&lang=en-ru';
         $http.get(url).success(function(result) {
             if (result.code == 200) {
-                $scope.result_pieces[$index] = result.text[0];
+                $scope.result_pieces[$index] += result.text[0];
             } else {
                 alert('Translation error');
             }
