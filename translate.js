@@ -24,9 +24,9 @@ bltApp.controller('TranslateController', ['$scope', '$http', function TranslateC
                 if (p.length < 100) {
                     if (!have_title ) {
                         have_title = true;
-                        return '#';
+                        return '# ';
                     }
-                    return '##'
+                    return '## '
                 }
                 return '';
             })
