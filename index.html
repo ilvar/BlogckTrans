@@ -38,6 +38,9 @@
         <tr ng-repeat="p in source_pieces track by $index">
             <td class="col-lg-4">
                 <p>{{ p }}</p>
+                <p class="text-right" ng-show="yandex_key && result_pieces[$index].length < 10">
+                    <button class="btn btn-sm btn-danger" ng-click="translateYandex($index)">Translate with Yandex</button>
+                </p>
             </td>
             <td class="col-lg-8">
                 <input class="form-control" ng-hide="p.length > 100" ng-model="result_pieces[$index]">
@@ -74,6 +77,13 @@
                     <h4 class="modal-title" id="myModalLabel">Source</h4>
                 </div>
                 <div class="modal-body">
+                    <div class="form-group">
+                        <label for="idYandexKey">Yandex translate API key (en-ru)</label>
+                        <input class="form-control" id="idYandexKey" ng-model="yandex_key" />
+                        <p class="help-block">
+                            Please read <a href="http://api.yandex.ru/translate/doc/dg/concepts/design-requirements.xml">Yandex translation rules</a>
+                        </p>
+                    </div>
                     <div class="form-group">
                         <label for="idSourceURL">Source URL</label>
                         <input class="form-control" id="idSourceURL" ng-model="source_url" />

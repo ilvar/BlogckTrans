@@ -5,13 +5,14 @@
 
 var bltApp = angular.module('bltApp', ['ngSanitize']);
 
-bltApp.controller('TranslateController', ['$scope', function TranslateController($scope) {
+bltApp.controller('TranslateController', ['$scope', '$http', function TranslateController($scope, $http) {
     $scope.source_url = JSON.parse(localStorage['source_url'] || '""');
     $scope.source_text = JSON.parse(localStorage['source_text'] || '""');
     $scope.source_pieces = JSON.parse(localStorage['source_pieces'] || "[]");
     $scope.result_pieces = JSON.parse(localStorage['result_pieces'] || "[]");
 
-    $scope.result_format = $scope.result_format || 'preview';
+    $scope.yandex_key = localStorage['yandex_key'] || '';
+    $scope.result_format = localStorage['result_format'] || 'preview';
 
     $scope.updateSource = function() {
         var have_title = false;
@@ -41,6 +42,10 @@ bltApp.controller('TranslateController', ['$scope', function TranslateController
         localStorage['result_format'] = newValue;
     });
 
+    $scope.$watch('yandex_key', function(newValue) {
+        localStorage['yandex_key'] = newValue;
+    });
+
     $scope.$watchCollection('result_pieces', function(newValue) {
         localStorage['result_pieces'] = JSON.stringify($scope.result_pieces);
         var result_pieces = _.filter($scope.result_pieces, function(p) { return p; });
@@ -50,4 +55,19 @@ bltApp.controller('TranslateController', ['$scope', function TranslateController
         }).join('\n\n');
         $scope.result_html = Markdown($scope.result_markdown);
     });
+
+    $scope.translateYandex = function($index) {
+        var src = $scope.source_pieces[$index];
+        var url = 'https://translate.yandex.net/api/v1.5/tr.json/translate?key=' + $scope.yandex_key;
+        url += '&text=' + src + '&lang=en-ru';
+        $http.get(url).success(function(result) {
+            if (result.code == 200) {
+                $scope.result_pieces[$index] = result.text[0];
+            } else {
+                alert('Translation error');
+            }
+        }).error(function(){
+            alert('Translation error');
+        });
+    }
 }]);
