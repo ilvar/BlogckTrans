@@ -29,7 +29,6 @@ bltApp.controller('TranslateController', ['$scope', '$http', function TranslateC
                         $scope.source_text += iframe + '\n\n';
                     }
                 });
-                try { $scope.$apply(); } catch(e) {}
             }
         });
     };
