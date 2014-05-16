@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html ng-app="bltApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>BlogTrans - article translation UI</title>
+    <link rel="stylesheet" href="/static/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/bootstrap.cerulean.min.css">
+    <style>
+        .modal textarea {
+            height: 400px;
+        }
+
+        textarea.translation {
+            height: 100%;
+        }
+
+        .navbar {
+            margin-bottom: 5px;
+        }
+
+        #idResultPreview {
+            overflow-y: auto;
+            max-height: 600px;
+        }
+    </style>
+</head>
+<body ng-controller="TranslateController">
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">BlogTrans</a>
+        </div>
+        <div class="navbar-right">
+            <button class="btn btn-sm btn-warning navbar-btn" data-toggle="modal" data-target="#sourceModal">Source
+            </button>
+            <button class="btn btn-sm btn-success navbar-btn" data-toggle="modal" data-target="#resultModal">Result
+            </button>
+        </div>
+    </div>
+</nav>
+
+<table class="table" ng-show="source_pieces.length">
+    <tr ng-repeat="p in source_pieces track by $index">
+        <td class="col-lg-4">
+            <p>{{ p }}</p>
+
+            <p class="text-right" ng-show="yandex_key && result_pieces[$index].length < 10">
+                <button class="btn btn-sm btn-info" ng-click="translateYandex($index)">Translate with Yandex</button>
+            </p>
+        </td>
+        <td class="col-lg-8">
+            <input class="form-control" ng-hide="p.length > 100" ng-model="result_pieces[$index]">
+            <textarea class="form-control translation" ng-show="p.length > 100"
+                      ng-model="result_pieces[$index]"></textarea>
+        </td>
+    </tr>
+</table>
+
+<p class="text-right" ng-show="yandex_key">
+    Translating with <a href="http://api.yandex.ru/translate/doc/dg/concepts/About.xml">Yandex</a>
+</p>
+
+<div class="container" ng-hide="source_pieces.length">
+    <h1>What is BlogTrans?</h1>
+
+    <p>
+        It's a simple tool to translate large articles paragraph-by-paragraph.
+    </p>
+
+    <p>
+        No registration, no collaboration, no permanent connection needed. Really, you can save this
+        page to your old laptop and translate texts even on Everest!
+    </p>
+
+    <p>
+        Just click "Source" and paste source text with paragraphs splitted by double linebreaks.
+        You can also paste an URL and load content automatically (this feature needs network connection).
+    </p>
+
+    <p>
+        Translate text pieces one-by-one and click "Result" to get translation in Markdown or HTML.
+    </p>
+
+    <p>
+        Built by <a href="http://ilvar.ru">ilvar.ru</a>, source code published on
+        <a href="https://github.com/ilvar/BlogckTrans/tree/gh-pages">github</a>
+    </p>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="sourceModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Source</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="idYandexKey">Yandex translate API key (en-ru)</label>
+                    <input class="form-control" id="idYandexKey" ng-model="yandex_key"/>
+
+                    <p class="help-block">
+                        Please read <a href="http://api.yandex.ru/translate/doc/dg/concepts/design-requirements.xml">Yandex
+                        translation rules</a>
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="idSourceURL">Source URL</label>
+                    <div class="input-group">
+                        <input type="url" id="idSourceURL" class="form-control" ng-model="source_url" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" ng-click="loadSource()" ng-disabled="!source_url">Load</button>
+                        </span>
+                    </div>
+                    <!-- /input-group -->
+                </div>
+                <div class="form-group">
+                    <label for="idSourceText">Source text</label>
+                    <textarea class="form-control" id="idSourceText" ng-model="source_text"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="updateSource()">Update
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Result</h4>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-tabs">
+                    <li ng-class="{'active': result_format == 'preview'}">
+                        <a href="#" ng-click="result_format = 'preview'">preview</a>
+                    </li>
+                    <li ng-class="{'active': result_format == 'markdown'}">
+                        <a href="#" ng-click="result_format = 'markdown'">markdown</a>
+                    </li>
+                    <li ng-class="{'active': result_format == 'html'}">
+                        <a href="#" ng-click="result_format = 'html'">html</a>
+                    </li>
+                </ul>
+                <div ng-show="result_format == 'preview'">
+                    <div id="idResultPreview" ng-bind-html="result_html"></div>
+                </div>
+                <div ng-show="result_format == 'markdown'">
+                    <div class="form-group">
+                        <label for="idResultMarkdown">Result markdown</label>
+                        <textarea class="form-control" id="idResultMarkdown" ng-model="result_markdown"></textarea>
+                    </div>
+                </div>
+                <div ng-show="result_format == 'html'">
+                    <div class="form-group">
+                        <label for="idResultHTML">Result html</label>
+                        <textarea class="form-control" id="idResultHTML" ng-model="result_html"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/jquery.min.js"></script>
+<script src="/static/bootstrap.min.js"></script>
+<script src="/static/angular.min.js"></script>
+<script src="/static/angular-sanitize.min.js"></script>
+<script src="/static/lodash.min.js"></script>
+<script src="/static/js-markdown-extra.js"></script>
+<script src="/static/translate.js"></script>
+</body>
+</html>

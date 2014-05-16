@@ -1,0 +1,11 @@
+BeautifulSoup==3.2.1
+Pillow==2.4.0
+PyYAML==3.11
+argparse==1.2.1
+bottle==0.12.7
+cssselect==0.9.1
+-e git+git@github.com:grangier/python-goose.git@c8240c03fd48564ed6abcd5aa74fe448ed8dfb92#egg=goose_extractor-origin/develop
+jieba==0.32
+lxml==3.3.5
+nltk==2.0.4
+wsgiref==0.1.2
