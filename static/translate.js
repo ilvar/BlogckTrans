@@ -72,15 +72,22 @@ bltApp.controller('TranslateController', ['$scope', '$http', function TranslateC
 
     $scope.$watchCollection('result_pieces', function(newValue) {
         localStorage['result_pieces'] = JSON.stringify($scope.result_pieces);
-        var result_pieces = _.filter($scope.result_pieces, function(p) { return p; });
-
-        $scope.result_markdown = _.map(result_pieces, function(p, i) {
-            if ($scope.source_pieces[i].length > 100) {
-                return p;
-            } else {
-                return '## ' + p;
-            }
-        }).join('\n\n');
+        $scope.result_markdown = _.filter($scope.result_pieces, function(p) { return p; }).join('\n\n');
         $scope.result_html = Markdown($scope.result_markdown);
     });
+
+    $scope.translateYandex = function($index) {
+        var src = $scope.source_pieces[$index];
+        var url = 'https://translate.yandex.net/api/v1.5/tr.json/translate?key=' + $scope.yandex_key;
+        url += '&text=' + src + '&lang=en-ru';
+        $http.get(url).success(function(result) {
+            if (result.code == 200) {
+                $scope.result_pieces[$index] += result.text[0];
+            } else {
+                alert('Translation error');
+            }
+        }).error(function(){
+            alert('Translation error');
+        });
+    }
 }]);
