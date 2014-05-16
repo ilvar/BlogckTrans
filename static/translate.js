@@ -76,6 +76,14 @@ bltApp.controller('TranslateController', ['$scope', '$http', function TranslateC
         $scope.result_html = Markdown($scope.result_markdown);
     });
 
+    $scope.$watch('result_format', function(newValue) {
+        localStorage['result_format'] = newValue;
+    });
+
+    $scope.$watch('yandex_key', function(newValue) {
+        localStorage['yandex_key'] = newValue;
+    });
+
     $scope.translateYandex = function($index) {
         var src = $scope.source_pieces[$index];
         var url = 'https://translate.yandex.net/api/v1.5/tr.json/translate?key=' + $scope.yandex_key;
