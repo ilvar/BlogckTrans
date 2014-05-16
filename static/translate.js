@@ -58,7 +58,7 @@ bltApp.controller('TranslateController', ['$scope', '$http', function TranslateC
                 return '';
             })
 
-            localStorage['source_text'] = JSON.stringify(newValue);
+            localStorage['source_text'] = JSON.stringify($scope.source_text);
             localStorage['source_pieces'] = JSON.stringify($scope.source_pieces);
             localStorage['result_pieces'] = JSON.stringify($scope.result_pieces);
         }
