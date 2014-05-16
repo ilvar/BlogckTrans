@@ -1,9 +1,9 @@
 /**
  * Created by ilvar on 11.05.14.
  */
+var bltApp = angular.module('bltApp', ['ngSanitize']);
 
-
-function TranslateController($scope) {
+bltApp.controller('TranslateController', ['$scope', '$http', function TranslateController($scope, $http) {
     $scope.source_url = JSON.parse(localStorage['source_url'] || '""');
     $scope.source_text = JSON.parse(localStorage['source_text'] || '""');
     $scope.source_pieces = JSON.parse(localStorage['source_pieces'] || "[]");
@@ -83,4 +83,4 @@ function TranslateController($scope) {
         }).join('\n\n');
         $scope.result_html = Markdown($scope.result_markdown);
     });
-}
+}]);
