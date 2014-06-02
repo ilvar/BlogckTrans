@@ -14,7 +14,7 @@ def read():
 
     article_data = {
         'title': article.title,
-        'image': dict(src=article.top_image.src),
+        'image': article.top_image and dict(src=article.top_image.src) or None,
         'article': article.cleaned_text,
         'movies': [dict(src=m.src,width=m.width, height=m.height) for m in article.movies],
     }

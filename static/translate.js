@@ -4,37 +4,12 @@
 var bltApp = angular.module('bltApp', ['ngSanitize']);
 
 bltApp.controller('TranslateController', ['$scope', '$http', function TranslateController($scope, $http) {
-    try {
-        $scope.project = JSON.parse(localStorage['project'] || '{}');
-    } catch(e) {
-        $scope.project = {};
-    }
-    try {
-        $scope.project_list = JSON.parse(localStorage['project_list'] || '[]');
-    } catch(e) {
-        $scope.project_list = [];
-    }
-
-    $scope.source_url = $scope.project.source_url || JSON.parse(localStorage['source_url'] || '""');
-    $scope.source_text = $scope.project.source_text || JSON.parse(localStorage['source_text'] || '""');
-    $scope.source_pieces = $scope.project.source_pieces || JSON.parse(localStorage['source_pieces'] || "[]");
-    $scope.result_pieces = $scope.project.result_pieces || JSON.parse(localStorage['result_pieces'] || "[]");
-
-    if (!$scope.project.name) {
-        $scope.project = {
-            name: $scope.source_pieces[0].substr(1),
-            source_url: $scope.source_url,
-            source_text: $scope.source_text,
-            source_pieces: $scope.source_pieces,
-            result_pieces: $scope.result_pieces
-        };
-    }
-
-    if (!$scope.project_list.length) {
-        $scope.project_list = [$scope.project];
-    }
-
-    $scope.project = _.findWhere($scope.project_list, {name: $scope.project.name});
+    $scope.project_list = JSON.parse(localStorage['project_list'] || '[]');
+    $scope.project_name = JSON.parse(localStorage['project_name'] || '""');
+    $scope.source_url = JSON.parse(localStorage['source_url'] || '""');
+    $scope.source_text = JSON.parse(localStorage['source_text'] || '""');
+    $scope.source_pieces = JSON.parse(localStorage['source_pieces'] || "[]");
+    $scope.result_pieces = JSON.parse(localStorage['result_pieces'] || "[]");
 
     $scope.yandex_key = localStorage['yandex_key'] || '';
     $scope.result_format = localStorage['result_format'] || 'preview';
@@ -90,20 +65,6 @@ bltApp.controller('TranslateController', ['$scope', '$http', function TranslateC
                 return '';
             });
 
-            if ($scope.project.source_url == $scope.source_url || !$scope.project.source_url) {
-                $scope.project.source_text = $scope.source_text;
-                $scope.project.source_pieces = $scope.source_pieces;
-                $scope.project.result_pieces = $scope.result_pieces;
-            } else {
-                $scope.project = {
-                    name: 'Project',
-                    source_url: $scope.source_url,
-                    source_text: $scope.source_text,
-                    source_pieces: $scope.source_pieces,
-                    result_pieces: $scope.result_pieces
-                };
-                $scope.project_list.push($scope.project);
-            }
             $scope.saveData();
         }
     };
@@ -112,7 +73,7 @@ bltApp.controller('TranslateController', ['$scope', '$http', function TranslateC
         localStorage['source_text'] = JSON.stringify($scope.source_text);
         localStorage['source_pieces'] = JSON.stringify($scope.source_pieces);
         localStorage['result_pieces'] = JSON.stringify($scope.result_pieces);
-        localStorage['project'] = JSON.stringify($scope.project);
+        localStorage['project_name'] = JSON.stringify($scope.project_name);
         localStorage['project_list'] = JSON.stringify($scope.project_list);
     };
 
@@ -123,22 +84,47 @@ bltApp.controller('TranslateController', ['$scope', '$http', function TranslateC
     });
 
     $scope.newProject = function() {
-        $scope.project = {
-            name: 'Project'
-        };
-        $scope.project_list.push($scope.project);
+        $scope.source_url = '';
+        $scope.source_text = '';
+        $scope.project_name = 'Project';
+        $scope.source_pieces = [];
+        $scope.result_pieces = [];
+
     };
 
-    $scope.$watch('project', function(newValue) {
-        $scope.source_url = $scope.project.source_url;
-        $scope.source_text = $scope.project.source_text;
-        $scope.source_pieces = $scope.project.source_pieces;
-        $scope.result_pieces = $scope.project.result_pieces;
+    $scope.saveProject = function() {
+        var project_in_list = false;
+        if (!$scope.project) {
+            $scope.project = _.findWhere($scope.project_list, {name: $scope.project_name});
+            project_in_list = $scope.project;
+        }
+        if (!$scope.project) {
+            $scope.project = {
+                name: $scope.project_name || 'Project',
+                source_text: $scope.source_text,
+                source_pieces: $scope.source_pieces,
+                result_pieces: $scope.result_pieces
+            }
+        } else {
+            $scope.project.name = $scope.project_name || 'Project';
+            $scope.project.source_text = $scope.source_text;
+            $scope.project.source_pieces = $scope.source_pieces;
+            $scope.project.result_pieces = $scope.result_pieces;
+            $scope.project.project_name = $scope.project_name;
+        }
+        if (!project_in_list) {
+            $scope.project_list.push($scope.project);
+        }
+    }
 
-        $scope.saveData();
-    });
+    $scope.loadProject = function(newValue) {
+        $scope.project_name = $scope.project.name;
+        $scope.source_text = $scope.project.source_text;
+        $scope.source_pieces = $scope.project.source_pieces;
+        $scope.result_pieces = $scope.project.result_pieces;
+    };
 
-    $scope.$watch('project_list', function(newValue) {
+    $scope.$watchCollection('project_list', function(newValue) {
         $scope.saveData();
     });
 
@@ -146,7 +132,6 @@ bltApp.controller('TranslateController', ['$scope', '$http', function TranslateC
         localStorage['result_pieces'] = JSON.stringify($scope.result_pieces);
         $scope.result_markdown = _.filter($scope.result_pieces, function(p) { return p; }).join('\n\n');
         $scope.result_html = Markdown($scope.result_markdown);
-        $scope.project.result_pieces = $scope.result_pieces;
     });
 
     $scope.$watch('result_format', function(newValue) {
