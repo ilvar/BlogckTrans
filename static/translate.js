@@ -73,17 +73,12 @@ bltApp.controller('TranslateController', ['$scope', '$http', function TranslateC
 
     $scope.saveData = function() {
         localStorage['source_text'] = JSON.stringify($scope.source_text);
+        localStorage['source_url'] = JSON.stringify($scope.source_url);
         localStorage['source_pieces'] = JSON.stringify($scope.source_pieces);
         localStorage['result_pieces'] = JSON.stringify($scope.result_pieces);
         localStorage['project_name'] = JSON.stringify($scope.project_name);
         localStorage['project_list'] = JSON.stringify($scope.project_list);
     };
-
-    $scope.$watch('source_url', function(newValue) {
-        if (newValue) {
-            localStorage['source_url'] = JSON.stringify(newValue);
-        }
-    });
 
     $scope.newProject = function() {
         $scope.source_url = '';
@@ -128,6 +123,7 @@ bltApp.controller('TranslateController', ['$scope', '$http', function TranslateC
 
     $scope.loadProject = function(newValue) {
         $scope.project_name = $scope.project.name;
+        $scope.source_url = $scope.project.source_url;
         $scope.source_text = $scope.project.source_text;
         $scope.source_pieces = $scope.project.source_pieces;
         $scope.result_pieces = $scope.project.result_pieces;
@@ -141,6 +137,7 @@ bltApp.controller('TranslateController', ['$scope', '$http', function TranslateC
         localStorage['result_pieces'] = JSON.stringify($scope.result_pieces);
         $scope.result_markdown = _.filter($scope.result_pieces, function(p) { return p; }).join('\n\n');
         $scope.result_html = Markdown($scope.result_markdown);
+        $scope.saveData();
     });
 
     $scope.$watch('result_format', function(newValue) {
