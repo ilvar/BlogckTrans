@@ -90,14 +90,12 @@ bltApp.controller('TranslateController', ['$scope', '$http', function TranslateC
     };
 
     $scope.saveProject = function() {
-        var project_in_list = false;
-        if (!$scope.project) {
-            $scope.project = _.findWhere($scope.project_list, {name: $scope.project_name});
-            project_in_list = $scope.project;
-        }
+        $scope.project = _.findWhere($scope.project_list, {name: $scope.project_name});
+        var project_in_list = $scope.project;
         if (!$scope.project) {
             $scope.project = {
                 name: $scope.project_name || 'Project',
+                source_url: $scope.source_url,
                 source_text: $scope.source_text,
                 source_pieces: $scope.source_pieces,
                 result_pieces: $scope.result_pieces
@@ -105,6 +103,7 @@ bltApp.controller('TranslateController', ['$scope', '$http', function TranslateC
         } else {
             $scope.project.name = $scope.project_name || 'Project';
             $scope.project.source_text = $scope.source_text;
+            $scope.project.source_url= $scope.source_url;
             $scope.project.source_pieces = $scope.source_pieces;
             $scope.project.result_pieces = $scope.result_pieces;
             $scope.project.project_name = $scope.project_name;
